@@ -23,7 +23,7 @@ roles/container-runtime-hardening/{defaults,tasks,handlers,templates}
 roles/kubernetes-node-hardening/{defaults,tasks,handlers,templates}
 roles/gpu-hardening/{defaults,tasks,handlers,files}
 roles/compliance/{defaults,tasks,reports}
-roles/break-glass/{defaults,tasks,templates}
+roles/break-glass/{defaults,tasks,handlers,templates}
 )
 
 mkdir -p "${dirs[@]}"
@@ -73,7 +73,7 @@ roles/gpu-hardening/{defaults/main.yaml,handlers/main.yaml,tasks/main.yaml}
 roles/compliance/defaults/main.yaml
 roles/compliance/tasks/{main.yaml,cis.yaml,nist.yaml}
 
-roles/break-glass/{defaults/main.yaml,tasks/main.yaml}
+roles/break-glass/{defaults/main.yaml,handlers/main.yaml,tasks/main.yaml}
 roles/break-glass/templates/sudoers.j2
 
 policies/ansible/{mandatory-hardening.rego,forbidden-configs.rego}

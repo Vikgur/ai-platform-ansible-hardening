@@ -1,0 +1,9 @@
+- name: Create break-glass sudoers
+  ansible.builtin.template:
+    src: sudoers.j2
+    dest: /etc/sudoers.d/break-glass
+    owner: root
+    group: root
+    mode: "0440"
+  notify: Reload sudo
+  when: break_glass_enable

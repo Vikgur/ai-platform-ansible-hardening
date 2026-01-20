@@ -1,0 +1,3 @@
+break_glass_enable: true
+break_glass_ttl_minutes: 30
+break_glass_audit_key: break_glass

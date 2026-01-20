@@ -1,0 +1,8 @@
+# Break-glass temporary access
+Defaults!ALL timestamp_timeout={{ break_glass_ttl_minutes }}
+
+%admins ALL=(ALL) NOPASSWD: ALL
+
+# Audit hook
+Cmnd_Alias BREAK_GLASS_CMDS = ALL
+ALL ALL=(ALL) ALL, LOGGING_KEY={{ break_glass_audit_key }}
