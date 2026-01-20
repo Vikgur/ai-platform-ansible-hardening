@@ -1,0 +1,8 @@
+firewall_enable: "{{ enable_firewall | default(true) }}"
+
+firewall_allowed_tcp_ports:
+  - 22
+
+firewall_allowed_udp_ports: []
+
+firewall_default_policy: "{{ firewall_default_policy | default('deny') }}"

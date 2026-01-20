@@ -1,0 +1,3 @@
+selinux_enable: "{{ enable_selinux | default(true) }}"
+selinux_state: enforcing
+selinux_policy: targeted

@@ -1,0 +1,26 @@
+- name: Install UFW
+  ansible.builtin.package:
+    name: ufw
+    state: present
+  when: firewall_enable
+
+- name: Set default policy
+  ansible.builtin.command: "ufw default {{ firewall_default_policy }}"
+  changed_when: false
+  when: firewall_enable
+
+- name: Allow TCP ports
+  ansible.builtin.command: "ufw allow {{ item }}"
+  loop: "{{ firewall_allowed_tcp_ports }}"
+  changed_when: false
+  when: firewall_enable
+
+- name: Allow UDP ports
+  ansible.builtin.command: "ufw allow {{ item }}/udp"
+  loop: "{{ firewall_allowed_udp_ports }}"
+  changed_when: false
+  when: firewall_enable
+
+- name: Enable firewall
+  ansible.builtin.command: ufw --force enable
+  when: firewall_enable

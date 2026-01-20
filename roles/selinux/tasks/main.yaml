@@ -1,0 +1,13 @@
+- name: Install SELinux packages
+  ansible.builtin.package:
+    name:
+      - selinux-basics
+      - selinux-policy-default
+    state: present
+  when: selinux_enable
+
+- name: Set SELinux state
+  ansible.posix.selinux:
+    policy: "{{ selinux_policy }}"
+    state: "{{ selinux_state }}"
+  when: selinux_enable
