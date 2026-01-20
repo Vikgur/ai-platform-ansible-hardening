@@ -1,0 +1,14 @@
+all:
+  children:
+    bastion:
+      hosts:
+        bastion-prod-01:
+    k8s_control:
+      hosts:
+        k8s-control-prod-01:
+    k8s_worker:
+      hosts:
+        k8s-worker-prod-01:
+    ai_gpu:
+      hosts:
+        ai-gpu-prod-01:

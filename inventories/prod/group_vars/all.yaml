@@ -1,0 +1,15 @@
+security_domain: prod
+
+enable_selinux: true
+enable_audit: true
+enable_firewall: true
+enable_gpu: true
+enable_kubernetes: true
+enable_container_runtime_hardening: true
+
+ssh_allowed_groups:
+  - sre
+
+firewall_default_policy: deny
+
+audit_log_retention_days: 90
