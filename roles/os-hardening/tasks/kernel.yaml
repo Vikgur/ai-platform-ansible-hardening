@@ -1,0 +1,8 @@
+- name: Disable kernel modules
+  ansible.builtin.copy:
+    dest: "/etc/modprobe.d/{{ item }}.conf"
+    content: "install {{ item }} /bin/true"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ kernel_disable_modules }}"

@@ -1,0 +1,8 @@
+- import_tasks: kernel.yaml
+  when: os_hardening_enable
+
+- import_tasks: sysctl.yaml
+  when: os_hardening_enable
+
+- import_tasks: filesystem.yaml
+  when: os_hardening_enable

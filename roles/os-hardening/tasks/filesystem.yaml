@@ -1,0 +1,8 @@
+- name: Harden filesystem mounts
+  ansible.posix.mount:
+    path: "{{ item.path }}"
+    src: "{{ item.path }}"
+    fstype: tmpfs
+    opts: "{{ item.opts }}"
+    state: mounted
+  loop: "{{ filesystem_mounts }}"
