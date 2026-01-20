@@ -1,0 +1,9 @@
+- name: OS and access hardening
+  hosts: all
+  become: true
+  roles:
+    - os-hardening
+    - ssh-hardening
+    - auditd
+    - firewall
+    - selinux

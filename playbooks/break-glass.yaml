@@ -1,0 +1,5 @@
+- name: Controlled break-glass access
+  hosts: all
+  become: true
+  roles:
+    - break-glass

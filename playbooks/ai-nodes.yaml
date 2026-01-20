@@ -1,0 +1,5 @@
+- name: AI / GPU node hardening
+  hosts: ai_gpu
+  become: true
+  roles:
+    - gpu-hardening

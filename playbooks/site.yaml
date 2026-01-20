@@ -1,0 +1,14 @@
+- name: Bootstrap
+  import_playbook: bootstrap.yaml
+
+- name: Hardening baseline
+  import_playbook: hardening.yaml
+
+- name: Kubernetes node security
+  import_playbook: kubernetes.yaml
+
+- name: AI / GPU nodes
+  import_playbook: ai-nodes.yaml
+
+- name: Break-glass access
+  import_playbook: break-glass.yaml

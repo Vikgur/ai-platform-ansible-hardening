@@ -1,0 +1,6 @@
+- name: Kubernetes node hardening
+  hosts: k8s_control:k8s_worker
+  become: true
+  roles:
+    - container-runtime-hardening
+    - kubernetes-node-hardening
