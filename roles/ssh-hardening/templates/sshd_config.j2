@@ -1,0 +1,28 @@
+Port {{ ssh_port }}
+Protocol 2
+
+PermitRootLogin {{ ssh_permit_root_login }}
+PasswordAuthentication {{ ssh_password_authentication }}
+PubkeyAuthentication {{ ssh_pubkey_authentication }}
+PermitEmptyPasswords {{ ssh_permit_empty_passwords }}
+ChallengeResponseAuthentication {{ ssh_challenge_response_authentication }}
+UsePAM {{ ssh_use_pam }}
+
+LoginGraceTime {{ ssh_login_grace_time }}
+MaxAuthTries {{ ssh_max_auth_tries }}
+MaxSessions {{ ssh_max_sessions }}
+
+ClientAliveInterval {{ ssh_client_alive_interval }}
+ClientAliveCountMax {{ ssh_client_alive_count_max }}
+
+X11Forwarding no
+AllowTcpForwarding no
+AllowAgentForwarding no
+PermitTunnel no
+AllowStreamLocalForwarding no
+
+{% if ssh_allow_groups | length > 0 %}
+AllowGroups {{ ssh_allow_groups | join(' ') }}
+{% endif %}
+
+Subsystem sftp internal-sftp
