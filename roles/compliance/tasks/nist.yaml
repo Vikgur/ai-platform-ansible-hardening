@@ -1,0 +1,10 @@
+- name: Generate NIST compliance report
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/nist-audit --output {{ compliance_report_path }}/nist-report.txt"
+  register: nist_result
+  changed_when: false
+
+- name: Fail if NIST audit fails
+  ansible.builtin.fail:
+    msg: "NIST compliance failed"
+  when: nist_result.rc != 0

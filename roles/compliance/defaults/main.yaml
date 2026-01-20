@@ -1,0 +1,6 @@
+compliance_enable: true
+compliance_frameworks:
+  - cis
+  - nist
+
+compliance_report_path: /var/reports/compliance

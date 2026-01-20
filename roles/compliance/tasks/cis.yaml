@@ -1,0 +1,10 @@
+- name: Generate CIS compliance report
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/cis-audit --output {{ compliance_report_path }}/cis-report.txt"
+  register: cis_result
+  changed_when: false
+
+- name: Fail if CIS audit fails
+  ansible.builtin.fail:
+    msg: "CIS compliance failed"
+  when: cis_result.rc != 0

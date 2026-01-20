@@ -1,0 +1,5 @@
+- import_tasks: cis.yaml
+  when: compliance_enable and 'cis' in compliance_frameworks
+
+- import_tasks: nist.yaml
+  when: compliance_enable and 'nist' in compliance_frameworks
