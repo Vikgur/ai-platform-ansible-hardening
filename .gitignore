@@ -1,0 +1,63 @@
+# Ansible runtime
+*.retry
+*.log
+*.out
+.cache/
+.ansible/
+ansible.log
+
+# Secrets and credentials
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.vault
+vault-password.txt
+
+# Inventory local overrides
+inventories/*/hosts.local.yaml
+inventories/*/group_vars/*local*.yaml
+inventories/*/host_vars/*local*.yaml
+
+# Generated compliance and reports
+reports/
+compliance-reports/
+roles/*/reports/
+roles/*/artifacts/
+
+# Temporary and local scripts output
+tmp/
+.tmp/
+scripts/*.tmp
+
+# Python (Ansible tooling)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# CI artifacts
+artifacts/
+ci/output/
+ci/tmp/
+
+# Policy tooling
+opa-test-results/
+policy-reports/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Env files
+.env
+.env.*
+
+# Drafts
+README_draft.md
+docs/*_draft.md

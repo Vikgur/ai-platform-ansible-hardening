@@ -1,0 +1,17 @@
+profile: production
+
+skip_list:
+  - experimental
+
+enable_list:
+  - fqcn
+  - no-handler
+  - no-changed-when
+  - yaml
+
+warn_list:
+  - risky-shell-pipe
+
+exclude_paths:
+  - collections
+  - .facts

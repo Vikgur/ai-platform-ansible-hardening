@@ -9,6 +9,9 @@ repository-structure.md
 – ссылается на architecture.md как концептуальную модель
 – используется как навигация для README.md
 
+---
+
+Заполнить docs/repository-structure.md с кратким пояснением ролей/задач/DevSecOps-смысла по всем папкам/файлам.
 
 ---
 
@@ -21,7 +24,6 @@ repository-structure.md
 – Пустые файлы
 
 Шаги
-Заполнить README.md (вступление + scope + non-goals).
 ansible.cfg — strict defaults (forks, strategy, callbacks, interpreter).
 requirements.yml — только необходимые коллекции (community.general, ansible.posix).
 .gitignore — artefacts, retry, reports.
@@ -30,6 +32,13 @@ linters — ansible-lint, yamllint (strict).
 Чеклист
 – Репозиторий lint-clean
 – Ничего environment-specific в корне
+
+ПАТЧ ПЛАНА (добавка):
+
+ЭТАП 0.1. Execution layer
+Цель: воспроизводимый и контролируемый запуск
+Файлы: scripts/*
+Чеклист: deterministic, no implicit sudo, no env magic
 
 ЭТАП 1. Inventory и модель окружений
 

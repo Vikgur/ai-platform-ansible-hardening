@@ -1,0 +1,8 @@
+collections:
+  - name: ansible.posix
+    version: ">=1.5.0,<2.0.0"
+    source: https://galaxy.ansible.com
+
+  - name: community.general
+    version: ">=8.0.0,<9.0.0"
+    source: https://galaxy.ansible.com

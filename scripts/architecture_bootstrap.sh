@@ -35,6 +35,7 @@ ansible.cfg
 requirements.yml
 .ansible-lint
 .yamllint
+.gitignore
 
 inventories/dev/hosts.yaml
 inventories/stage/hosts.yaml
