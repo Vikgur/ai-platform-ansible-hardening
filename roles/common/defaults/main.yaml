@@ -1,0 +1,14 @@
+common_users: []
+common_groups: []
+
+common_packages:
+  - curl
+  - wget
+  - vim
+  - ca-certificates
+  - gnupg
+  - lsb-release
+
+timezone: UTC
+locale: en_US.UTF-8
+ntp_enabled: true

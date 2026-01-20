@@ -1,0 +1,33 @@
+- name: Ensure groups
+  ansible.builtin.group:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ common_groups }}"
+
+- name: Ensure users
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    groups: "{{ item.groups | default([]) }}"
+    shell: /bin/bash
+    state: present
+  loop: "{{ common_users }}"
+
+- name: Install base packages
+  ansible.builtin.package:
+    name: "{{ common_packages }}"
+    state: present
+
+- name: Set timezone
+  ansible.builtin.timezone:
+    name: "{{ timezone }}"
+
+- name: Ensure locale
+  ansible.builtin.command: localectl set-locale LANG={{ locale }}
+  changed_when: false
+
+- name: Enable NTP
+  ansible.builtin.service:
+    name: systemd-timesyncd
+    enabled: true
+    state: started
+  when: ntp_enabled
