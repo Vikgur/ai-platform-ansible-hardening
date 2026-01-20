@@ -1,0 +1,30 @@
+name: Compliance Report
+
+on:
+  pull_request:
+    paths:
+      - "roles/compliance/**"
+
+jobs:
+  compliance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install Ansible
+        run: pip install ansible
+
+      - name: Run compliance role
+        run: |
+          ansible-playbook playbooks/site.yaml --tags "compliance" -i inventories/dev/hosts.yaml
+          
+      - name: Upload compliance reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: compliance-reports
+          path: roles/compliance/reports/

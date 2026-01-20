@@ -1,0 +1,25 @@
+name: Ansible Check Mode
+
+on:
+  pull_request:
+    paths:
+      - "playbooks/**"
+      - "roles/**"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install Ansible
+        run: pip install ansible
+
+      - name: Run playbooks in check mode
+        run: |
+          ansible-playbook playbooks/site.yaml --check --diff -i inventories/dev/hosts.yaml
