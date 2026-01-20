@@ -1,0 +1,22 @@
+- name: Install auditd
+  ansible.builtin.package:
+    name: auditd
+    state: present
+  when: auditd_enable
+
+- name: Deploy audit rules
+  ansible.builtin.template:
+    src: audit.rules.j2
+    dest: /etc/audit/rules.d/hardening.rules
+    owner: root
+    group: root
+    mode: "0600"
+  notify: Restart auditd
+  when: auditd_enable
+
+- name: Ensure auditd service
+  ansible.builtin.service:
+    name: auditd
+    enabled: true
+    state: started
+  when: auditd_enable

@@ -1,0 +1,8 @@
+$ActionQueueType LinkedList
+$ActionQueueFileName security
+$ActionResumeRetryCount -1
+$ActionQueueSaveOnShutdown on
+
+{% if rsyslog_remote_host %}
+*.* @@{{ rsyslog_remote_host }}:{{ rsyslog_remote_port }}
+{% endif %}

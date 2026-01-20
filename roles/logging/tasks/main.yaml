@@ -1,0 +1,15 @@
+- name: Install rsyslog
+  ansible.builtin.package:
+    name: rsyslog
+    state: present
+  when: rsyslog_enable
+
+- name: Deploy rsyslog config
+  ansible.builtin.template:
+    src: rsyslog.conf.j2
+    dest: /etc/rsyslog.d/60-security.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart rsyslog
+  when: rsyslog_enable

@@ -1,0 +1,4 @@
+rsyslog_enable: true
+rsyslog_remote_host: ""
+rsyslog_remote_port: 514
+rsyslog_protocol: tcp
