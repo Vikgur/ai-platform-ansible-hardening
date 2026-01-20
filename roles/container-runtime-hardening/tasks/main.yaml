@@ -1,0 +1,31 @@
+- name: Install Docker
+  ansible.builtin.package:
+    name: docker.io
+    state: present
+  when: container_runtime_enable
+
+- name: Create docker config directory
+  ansible.builtin.file:
+    path: /etc/docker
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: container_runtime_enable
+
+- name: Deploy daemon.json
+  ansible.builtin.template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart docker
+  when: container_runtime_enable
+
+- name: Ensure docker service
+  ansible.builtin.service:
+    name: docker
+    enabled: true
+    state: started
+  when: container_runtime_enable

@@ -14,12 +14,12 @@ docs
 roles/common/{defaults,tasks,handlers,templates,files}
 roles/os-hardening/{defaults,tasks,handlers,templates}
 roles/os-hardening/tasks
-roles/ssh-hardening/{defaults,tasks,templates}
-roles/auditd/{defaults,tasks,templates}
-roles/logging/{defaults,tasks,templates}
+roles/ssh-hardening/{defaults,tasks,handlers,templates}
+roles/auditd/{defaults,tasks,handlers,templates}
+roles/logging/{defaults,tasks,handlers,templates}
 roles/firewall/{defaults,tasks}
 roles/selinux/{defaults,tasks}
-roles/container-runtime-hardening/{defaults,tasks,templates}
+roles/container-runtime-hardening/{defaults,tasks,handlers,templates}
 roles/kubernetes-node-hardening/{defaults,tasks,templates}
 roles/gpu-hardening/{defaults,tasks,files}
 roles/compliance/{defaults,tasks,reports}
@@ -49,19 +49,19 @@ roles/os-hardening/{defaults/main.yaml,handlers/main.yaml}
 roles/os-hardening/tasks/{main.yaml,kernel.yaml,sysctl.yaml,filesystem.yaml}
 roles/os-hardening/templates/sysctl.conf.j2
 
-roles/ssh-hardening/{defaults/main.yaml,tasks/main.yaml}
+roles/ssh-hardening/{defaults/main.yaml,tasks/main.yaml,handlers/main.yaml}
 roles/ssh-hardening/templates/sshd_config.j2
 
-roles/auditd/{defaults/main.yaml,tasks/main.yaml}
+roles/auditd/{defaults/main.yaml,handlers/main.yaml,tasks/main.yaml}
 roles/auditd/templates/audit.rules.j2
 
-roles/logging/{defaults/main.yaml,tasks/main.yaml}
+roles/logging/{defaults/main.yaml,handlers/main.yaml,tasks/main.yaml}
 roles/logging/templates/rsyslog.conf.j2
 
 roles/firewall/{defaults/main.yaml,tasks/main.yaml}
 roles/selinux/{defaults/main.yaml,tasks/main.yaml}
 
-roles/container-runtime-hardening/{defaults/main.yaml,tasks/main.yaml}
+roles/container-runtime-hardening/{defaults/main.yaml,handlers/main.yaml,tasks/main.yaml}
 roles/container-runtime-hardening/templates/daemon.json.j2
 
 roles/kubernetes-node-hardening/defaults/main.yaml

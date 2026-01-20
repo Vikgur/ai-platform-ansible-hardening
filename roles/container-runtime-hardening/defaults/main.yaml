@@ -1,0 +1,12 @@
+container_runtime: docker
+container_runtime_enable: "{{ enable_container_runtime_hardening | default(true) }}"
+
+docker_userns_remap: default
+docker_no_new_privileges: true
+docker_live_restore: true
+docker_log_driver: json-file
+docker_log_opts:
+  max-size: "10m"
+  max-file: "3"
+
+docker_seccomp_profile: default
