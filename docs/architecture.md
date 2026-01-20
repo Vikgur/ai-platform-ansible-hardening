@@ -1,14 +1,153 @@
-architecture.md
-Содержимое:
-– место ansible-hardening в Sovereign AI
-– цепочка: Terraform → Ansible → Kubernetes → Runtime
-– trust boundaries (cloud, node, kubelet, container, workload) • control plane trust boundary • CI/CD → infra boundary
-– разделение control plane / data plane
-– где enforcement (Ansible, OPA), где декларация (Terraform, K8s manifests)
-– Security assumptions (Assumptions and guarantees)
-– Day-0 / Day-1 / Day-2 model зафиксировать: • кто источник истины • где запрещены ручные изменения
+# Архитектура Ansible Hardening в Sovereign AI
 
-Связи:
-– ссылается на hardening-baseline.md как набор контролей
-– ссылается на kubernetes-security.md и ai-node-security.md как расширения
-– используется как точка входа для threat-model.md
+Данный документ описывает архитектурную роль Ansible-hardening в платформе Sovereign AI, границы доверия и модель применения security-контролей.
+
+Он является **точкой входа** для понимания:  
+– где и как обеспечивается безопасность,  
+– какие предположения считаются допустимыми,  
+– какие гарантии предоставляет платформа.
+
+Этот документ используется как основа для `docs/threat-model.md` и напрямую связан с `docs/hardening-baseline.md`.
+
+# Место Ansible Hardening в Sovereign AI
+
+Ansible-hardening занимает **нижний исполняемый слой безопасности** платформы Sovereign AI.
+
+Он отвечает за приведение вычислительных узлов к доверенному состоянию до того, как на них появляются:  
+– Kubernetes,  
+– AI-нагрузки,  
+– CI/CD-артефакты,  
+– пользовательские workloads.
+
+Без этого слоя любые декларативные политики выше считаются недостоверными.
+
+# Цепочка управления и исполнения
+
+Платформа строится как последовательная цепочка доверия:
+
+**Terraform → Ansible → Kubernetes → Runtime / Workloads**
+
+Роли компонентов:
+
+– Terraform  
+  Декларирует инфраструктуру, но не обеспечивает её безопасность.
+
+– Ansible Hardening  
+  Принудительно приводит узлы к security-baseline и устраняет дрейф.
+
+– Kubernetes  
+  Управляет workloads при условии доверенных нод.
+
+– Runtime  
+  Исполняет контейнеры в рамках заранее заданных ограничений.
+
+Каждый следующий слой предполагает корректность предыдущего.
+
+# Границы доверия
+
+Архитектура явно фиксирует границы доверия:
+
+– Cloud boundary  
+  Облако считается потенциально недоверенным.
+
+– Node boundary  
+  Доверие возникает только после успешного hardening.
+
+– Kubelet boundary  
+  kubelet считается доверенным только при соответствии baseline.
+
+– Container boundary  
+  Контейнеры изолированы, но не считаются доверенными.
+
+– Workload boundary  
+  Приложения считаются потенциально враждебными.
+
+Отдельно выделяются:
+
+– Control plane trust boundary  
+  Control-plane узлы имеют усиленный baseline.
+
+– CI/CD → Infrastructure boundary  
+  Любое изменение инфраструктуры допускается только через CI.
+
+# Control Plane и Data Plane
+
+Архитектура строго разделяет:
+
+– Control Plane  
+  Узлы управления, доступ минимален, изменения максимально ограничены.
+
+– Data Plane  
+  Worker и AI-ноды, изолированы от control-plane.
+
+Hardening для этих плоскостей различается и применяется целенаправленно.
+
+# Enforcement и декларация
+
+Разделение ролей инструментов принципиально:
+
+– Terraform  
+  Декларация ресурсов и топологии.
+
+– Kubernetes manifests  
+  Декларация желаемого состояния workloads.
+
+– Ansible  
+  Enforcement: принудительное применение security-контролей.
+
+– OPA / Rego  
+  Enforcement: запрет небезопасных состояний.
+
+Ни один декларативный слой не считается достаточным без enforcement.
+
+# Предположения и гарантии безопасности
+
+Предположения:
+
+– облако не является доверенным  
+– хосты могут быть скомпрометированы  
+– администратор может ошибаться  
+– workloads могут быть враждебными  
+
+Гарантии при соблюдении архитектуры:
+
+– воспроизводимый security-baseline  
+– минимизация blast-radius  
+– трассируемость изменений  
+– проверяемое соответствие стандартам  
+
+Гарантии теряются при обходе CI и ручных изменениях.
+
+# Day-0 / Day-1 / Day-2 модель
+
+Day-0:
+– инфраструктура описана Terraform  
+– Ansible — единственный источник hardening  
+
+Day-1:
+– узлы bootstrap’ятся и приводятся к baseline  
+– Kubernetes разворачивается только после hardening  
+
+Day-2:
+– любые изменения проходят через CI  
+– ручные изменения на узлах запрещены  
+– дрейф считается инцидентом  
+
+Источник истины:
+– Terraform — инфраструктура  
+– Ansible — состояние узлов  
+– Git — единственный change-log  
+
+# Связанные документы
+
+– `docs/hardening-baseline.md`  
+  Набор конкретных security-контролей.
+
+– `docs/kubernetes-security.md`  
+  Расширение для Kubernetes-узлов.
+
+– `docs/ai-node-security.md`  
+  Расширение для GPU и AI-нод.
+
+– `docs/threat-model.md`  
+  Использует данный документ как архитектурную основу.

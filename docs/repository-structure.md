@@ -1,287 +1,436 @@
-repository-structure.md
-Содержимое:
-– назначение каждой директории
-– где enforcement, где policy, где docs
-– как добавлять новые роли
-– как расширять compliance без ломки модели
+# Структура репозитория Ansible Hardening
 
-Связи:
-– ссылается на architecture.md как концептуальную модель
-– используется как навигация для README.md
+Данный документ описывает **структуру репозитория как архитектурное решение**, а не как перечень файлов.
+
+Он объясняет:  
+– зачем существует каждый слой  
+– где происходит enforcement, а где декларация  
+– как репозиторий поддерживает DevSecOps-модель Sovereign AI  
+
+Документ опирается на `docs/architecture.md` и используется как навигационная карта для `docs/README.md`.
+
+# Архитектурная логика структуры
+
+Репозиторий построен по принципу **разделения ответственности и слоёв доверия**.
+
+Ключевые идеи структуры:  
+– конфигурация ≠ безопасность  
+– декларация ≠ enforcement  
+– документация = часть security  
+– CI = обязательный участник lifecycle  
+
+Структура отражает путь:
+**политика → контроль → применение → проверка → доказательство**.
+
+# Корень репозитория
+
+Корень содержит только то, что относится к:  
+– управлению Ansible как платформой  
+– качеству и воспроизводимости  
+– интеграции с CI  
+
+Здесь нет hardening-логики — только управление ею.
+
+DevSecOps-смысл:  
+– единая точка входа  
+– минимизация случайных изменений  
+– стандартизация запуска и проверок  
+
+# inventories/
+
+Слой описания **окружений и ролей узлов**.
+
+Задачи:  
+– разделение dev / stage / prod  
+– отсутствие логики hardening  
+– только данные, без поведения  
+
+DevSecOps-смысл:  
+– среда не влияет на security-модель  
+– различия изолированы и явны  
+– минимизация environment-specific drift  
+
+# playbooks/
+
+Слой **исполняемых сценариев**.
+
+Задачи:  
+– формализовать потоки применения  
+– зафиксировать порядок и зависимости  
+– исключить «ручные комбинации ролей»  
+
+DevSecOps-смысл:  
+– сценарии вместо ad-hoc запусков  
+– воспроизводимость действий  
+– контроль blast-radius  
+
+# roles/
+
+Основной слой **security-enforcement**.
+
+Задачи:  
+– реализовать конкретные контроли  
+– изолировать области ответственности  
+– обеспечить повторяемость и идемпотентность  
+
+Каждая роль:  
+– закрывает конкретный класс угроз  
+– соотносится с hardening-baseline  
+– участвует в compliance  
+
+DevSecOps-смысл:  
+– безопасность как код  
+– переиспользуемые контроли  
+– проверяемость и аудит  
+
+# collections/
+
+Слой расширения Ansible.
+
+Задачи:  
+– изоляция внешних зависимостей  
+– контроль supply chain  
+– воспроизводимость окружения  
+
+DevSecOps-смысл:  
+– защита от неявных зависимостей  
+– детерминированные сборки  
+
+# policies/
+
+Слой **policy-as-code**.
+
+Задачи:  
+– запрет небезопасных состояний  
+– формализация обязательных требований  
+– автоматическая валидация  
+
+DevSecOps-смысл:  
+– безопасность до выполнения  
+– предотвращение ошибок, а не реакция  
+– enforcement без человека  
+
+# ci/
+
+Слой **доказательства безопасности**.
+
+Задачи:  
+– автоматическая проверка  
+– выявление нарушений  
+– генерация отчётов  
+
+DevSecOps-смысл:  
+– CI как security-gate  
+– отказ от доверия ручным действиям  
+– соответствие как результат, а не декларация  
+
+# scripts/
+
+Слой вспомогательных утилит.
+
+Задачи:  
+– стандартизировать запуск  
+– исключить ошибочные команды  
+– упростить bootstrap и валидацию  
+
+DevSecOps-смысл:  
+– снижение человеческого фактора  
+– одинаковое поведение локально и в CI  
+
+# docs/
+
+Слой **архитектурного знания**.
+
+Задачи:  
+– зафиксировать модель угроз  
+– описать security-архитектуру  
+– связать контроли и compliance  
+
+DevSecOps-смысл:  
+– документация как часть security  
+– воспроизводимость понимания  
+– аудит архитектуры, а не только кода  
 
 ---
 
-Заполнить docs/repository-structure.md с кратким пояснением ролей/задач/DevSecOps-смысла по всем папкам/файлам.
+Следующий раздел документа подробно описывает назначение **каждой директории и файла** репозитория.
 
 ---
 
-# Наполнение репозитория:
-
-ЭТАП 0. Базовая инициализация репозитория
-
-Входные данные
-– Итоговая структура
-– Пустые файлы
-
-Шаги
-ansible.cfg — strict defaults (forks, strategy, callbacks, interpreter).
-requirements.yml — только необходимые коллекции (community.general, ansible.posix).
-.gitignore — artefacts, retry, reports.
-linters — ansible-lint, yamllint (strict).
-
-Чеклист
-– Репозиторий lint-clean
-– Ничего environment-specific в корне
-
-ПАТЧ ПЛАНА (добавка):
-
-ЭТАП 0.1. Execution layer
-Цель: воспроизводимый и контролируемый запуск
-Файлы: scripts/*
-Чеклист: deterministic, no implicit sudo, no env magic
-
-ЭТАП 1. Inventory и модель окружений
-
-Цель
-Зафиксировать trust boundaries и control domains.
-
-Шаги
-inventories/*/hosts.yaml
-– группы: bastion, k8s_control, k8s_worker, ai_gpu
-group_vars/all.yaml
-– security defaults
-– feature flags (enable_gpu, enable_selinux, enable_audit)
-Никакой логики в host_vars (только исключения).
-
-Чеклист
-– Один inventory = один security domain
-– Нет секретов
-– Нет логики
-
-ЭТАП 2. Playbook orchestration
-
-Цель
-Сделать читаемую security-цепочку.
-
-Шаги
-site.yaml
-– единая точка входа
-bootstrap.yaml
-– user, sudo, python, repo, time, locale
-hardening.yaml
-– os → ssh → audit → firewall → selinux
-kubernetes.yaml
-– node-level security
-ai-nodes.yaml
-– GPU + runtime ограничения
-break-glass.yaml
-– строго изолирован
-
-Чеклист
-– Playbooks без tasks
-– Только роли
-– Чёткий порядок исполнения
-
-ЭТАП 3. Common role
-
-Цель
-Единая база для всех хостов.
-
-Шаги
-users / groups
-sudo baseline
-packages (минимум)
-ntp / time / locale
-handlers для reload/restart
-
-Чеклист
-– Никакого hardening здесь
-– Только фундамент
-
-ЭТАП 4. OS hardening
-
-Цель
-Минимизация attack surface.
-
-Шаги
-kernel.yaml
-– kptr_restrict, dmesg_restrict, modules
-sysctl.yaml
-– net, fs, vm
-filesystem.yaml
-– noexec,nodev,nosuid
-sysctl.conf.j2 — декларативно
-
-Чеклист
-– Idempotent
-– Без distro-specific хака
-– CIS-aligned
-
-ЭТАП 5. SSH hardening
+# Назначение директорий и файлов
 
-Цель
-Исключить интерактивный риск.
+## README.md
+Главная точка входа репозитория.  
+Содержит позиционирование, scope, non-goals и ссылки на docs/.  
+DevSecOps-смысл: быстрое понимание архитектуры и политики безопасности.
 
-Шаги
-sshd_config.j2
-– no root
-– key-only
-– idle timeout
-Fail-safe handler
-
-Чеклист
-– Совместимо с break-glass
-– Нет password auth
+## ansible.cfg
+Конфигурационный файл Ansible для репозитория.  
+Определяет поведение playbooks, путь к ролям и linting.  
+DevSecOps-смысл: единообразие запуска и контроль исполнения.
 
-ЭТАП 6. Audit и логирование
+## requirements.yml
+Определяет внешние Ansible-collections и зависимости.  
+DevSecOps-смысл: воспроизводимость окружения и контроль supply chain.
 
-Цель
-Полная трассируемость.
+## .ansible-lint
+Настройки для ansible-lint.  
+DevSecOps-смысл: enforce стандарты качества и безопасность ролей.
 
-Шаги
-audit.rules.j2
-– identity
-– sudo
-– kernel
-rsyslog
-– forwarding
-– tamper-resistance
+## .yamllint
+Конфигурация yaml-lint.  
+DevSecOps-смысл: гарантировать корректный синтаксис и предотвращение ошибок.
 
-Чеклист
-– Ничего не логировать «всё подряд»
-– Фокус на security events
+## .gitignore
+Исключает временные и чувствительные файлы из git.  
+DevSecOps-смысл: предотвращение утечек секретов и мусора в репозиторий.
 
-ЭТАП 7. Firewall и SELinux
+---
 
-Цель
-Enforcement, а не рекомендация.
+## inventories/
+Содержит описание всех окружений: dev, stage, prod.  
+Каждый подкаталог содержит:
+- hosts.yaml — список узлов  
+- group_vars/all.yaml — общие переменные  
+- host_vars/.gitkeep — индивидуальные переменные узлов  
 
-Шаги
-Firewall
-– default deny
-– минимальные allow
-SELinux
-– enforcing
-– kubelet/container contexts
+DevSecOps-смысл:
+- изоляция окружений  
+- отсутствие вручную управляемых конфигураций  
+- минимизация drift через Ansible
 
-Чеклист
-– Нет disable
-– Только policy-driven
+## playbooks/
+Содержит Ansible playbooks для управления жизненным циклом узлов и платформы.  
 
-ЭТАП 8. Container runtime hardening
+### site.yaml
+Главный playbook, orchestrates все остальные сценарии.  
+DevSecOps-смысл: единый точка запуска для полного hardening.
 
-Цель
-Закрыть container escape.
+### bootstrap.yaml
+Инициализация нового узла, установка зависимостей, подготовка среды.  
+DevSecOps-смысл: гарантированная повторяемость Day-0.
 
-Шаги
-daemon.json.j2
-– userns
-– no-new-privileges
-– seccomp
-Runtime validation
+### hardening.yaml
+Применение OS и runtime hardening к узлу.  
+DevSecOps-смысл: enforcement security baseline без side-effects.
 
-Чеклист
-– Совместимо с k8s
-– Без deprecated флагов
+### kubernetes.yaml
+Настройка и hardening Kubernetes-ноды.  
+DevSecOps-смысл: контроль kubelet и node-level security.
 
-ЭТАП 9. Kubernetes node hardening
+### ai-nodes.yaml
+Hardening AI/GPU узлов.  
+DevSecOps-смысл: изоляция, runtime ограничения, предотвращение утечек данных.
 
-Цель
-Node-level zero trust.
+### break-glass.yaml
+Playbook для безопасного экстренного доступа.  
+DevSecOps-смысл: enforce временного доступа с полной логируемостью и отзывом.
 
-Шаги
-kubelet.yaml
-– authz
-– cert rotation
-cni.yaml
-– no host access
-kubelet-config.yaml.j2
+---
 
-Чеклист
-– Совместимо с admission
-– Нет cluster-level логики
+## collections/
+Хранит локальные Ansible collections или заглушки для CI/CD.  
 
-ЭТАП 10. GPU hardening
+### ansible_collections/.gitkeep
+Обеспечивает сохранение пустой директории в Git.  
+DevSecOps-смысл: контроль структуры репозитория и reproducibility.
 
-Цель
-AI-специфическая защита.
+---
 
-Шаги
-Ограничение доступа к /dev/nvidia*
-Runtime isolation
-Запрет shared GPU без explicit allow
+## policies/
+Слой **policy-as-code** для проверки конфигураций.
 
-Чеклист
-– Нет implicit sharing
-– Audit-ready
+### ansible/
+Содержит OPA/rego правила для enforcement.
 
-ЭТАП 11. Compliance role
+- mandatory-hardening.rego — обязательные security-контроли  
+- forbidden-configs.rego — запрещённые конфигурации  
 
-Цель
-Security → compliance, а не наоборот.
+### README.md
+Описание назначения и принципов работы policy-as-code.  
+DevSecOps-смысл: прозрачное, формализованное управление безопасностью.
 
-Шаги
-cis.yaml
-nist.yaml
-Генерация reports
+---
 
-Чеклист
-– Mapping, не дублирование
-– Только проверяемое
+## ci/
+Содержит конфигурации CI для проверки Ansible-кода.
 
-ЭТАП 12. Break-glass
+### ansible-lint.yml
+Запуск ansible-lint как pipeline шаг.  
+DevSecOps-смысл: автоматическое соблюдение стандартов.
 
-Цель
-Контролируемое нарушение контроля.
+### ansible-check.yml
+Проверка playbooks на идемпотентность и потенциальные drift.  
+DevSecOps-смысл: доказательство, что изменения безопасны.
 
-Шаги
-sudoers.j2
-TTL логика
-Audit hooks
+### compliance-report.yml
+Генерация отчётов соответствия baseline и стандартам.  
+DevSecOps-смысл: CI как первичный инструмент audit-ready compliance.
 
-Чеклист
-– Не по умолчанию
-– Всегда логируется
+---
 
-ЭТАП 13. Policies (Policy-as-Code)
+## scripts/
+Вспомогательные утилиты для запуска и валидации.
 
-Цель
-Fail fast.
+### bootstrap.sh
+Подготовка узла перед применением Ansible.  
 
-Шаги
-mandatory-hardening.rego
-forbidden-configs.rego
-Связка с CI
+### run-playbook.sh
+Унифицированный запуск playbooks с параметрами окружения.  
 
-Чеклист
-– Политики читаемые
-– Enforcement до merge
+### verify.sh
+Проверка состояния узла после hardening.  
+DevSecOps-смысл: минимизация ручного вмешательства и ошибок.
 
-ЭТАП 14. CI
+### architecture_bootstrap.sh
+Скрипт создания структуры проекта.
 
-Цель
-Ни одного unsafe PR.
+---
 
-Шаги
-ansible-lint
-check-mode
-compliance-report
+## docs/
+Содержит документацию, фиксирующую архитектуру, угрозы, контролы и compliance.
 
-Чеклист
-– CI = gate
-– Нет ручных проверок
+### architecture.md
+Описывает место Ansible-hardening в платформе Sovereign AI, trust boundaries, control/data plane, enforcement vs декларацию и Day-0/1/2 модель.  
+DevSecOps-смысл: концептуальная карта, точка входа для всех security решений.
 
-ЭТАП 15. Docs
+### threat-model.md
+Документирует модели атакующих, AI-специфичные угрозы, lateral movement и supply chain атаки.  
+DevSecOps-смысл: обоснование контролей и приоритизация mitigations.
 
-Цель
-Продать архитектуру сеньер-уровня.
+### hardening-baseline.md
+Определяет “hardened host”, OS и runtime controls, immutable зоны и drift требования.  
+DevSecOps-смысл: базовый слой безопасности для всех узлов.
 
-Шаги
-Architecture → big picture
-Threat model → почему
-Baseline → что именно
-Compliance → аудит
+### kubernetes-security.md
+Расширяет baseline на Kubernetes-ноды, kubelet hardening, node-level controls, взаимодействие с admission, seccomp и AppArmor.  
+DevSecOps-смысл: защита control и data plane Kubernetes.
 
-Чеклист
-– Документация = часть security
-– Без воды
+### ai-node-security.md
+Описывает GPU isolation, runtime ограничения AI workloads, multi-tenant threats и data exfiltration prevention.  
+DevSecOps-смысл: безопасность вычислений и данных в AI-среде.
+
+### break-glass.md
+Фиксирует политику экстренного доступа, логирование, отзыв прав и post-incident review.  
+DevSecOps-смысл: controlled exception с полной auditability.
+
+### compliance-mapping.md
+Маппинг security controls на CIS/NIST/ISO, автоматизация, CI-проверки и внешние аудиты.  
+DevSecOps-смысл: доказательство соответствия стандартам и threat-model.
+
+### repository-structure.md
+Документирует назначение директорий и файлов, слои enforcement, policy, docs и правила расширения ролей.  
+DevSecOps-смысл: навигация, воспроизводимость и минимизация drift.
+
+---
+
+## roles/
+Основной слой **enforcement**, где реализуются все контролы безопасности.
+
+### common/
+Базовая роль с общими настройками и вспомогательными задачами.  
+- defaults/main.yaml — общие переменные  
+- handlers/main.yaml — общие handlers  
+- tasks/main.yaml — базовые задачи  
+- templates/.gitkeep / files/.gitkeep — пустые каталоги для структуры  
+
+DevSecOps-смысл: минимизация повторений и единая точка расширения для всех ролей.
+
+### os-hardening/
+Роль для hardening ОС.  
+- defaults/main.yaml — общие переменные  
+- tasks/kernel.yaml — контроль ядра  
+- tasks/sysctl.yaml — sysctl параметры  
+- tasks/filesystem.yaml — настройка FS  
+- templates/sysctl.conf.j2 — шаблон sysctl  
+- handlers/main.yaml — обработчики  
+
+DevSecOps-смысл: enforce безопасную ОС как базу для всех остальных слоев.
+
+### ssh-hardening/
+Контроль SSH.  
+- defaults/main.yaml — общие переменные  
+- tasks/main.yaml — настройка sshd  
+- templates/sshd_config.j2 — шаблон конфигурации  
+- handlers/main.yaml — перезапуск сервиса при изменениях  
+
+DevSecOps-смысл: предотвращение удалённых атак и принудительное соблюдение политики доступа.
+
+### auditd/
+Настройка auditd.  
+- defaults/main.yaml — общие переменные  
+- tasks/main.yaml — правила аудита  
+- templates/audit.rules.j2 — шаблон правил  
+- handlers/main.yaml — reload auditd  
+
+DevSecOps-смысл: обязательный аудит всех действий на хосте, traceability.
+
+### logging/
+Управление централизованной логгинг-системой.  
+- defaults/main.yaml — общие переменные  
+- tasks/main.yaml — конфигурация rsyslog  
+- templates/rsyslog.conf.j2 — шаблон конфигурации  
+- handlers/main.yaml — перезапуск rsyslog  
+
+DevSecOps-смысл: защита логов и их централизованная доступность.
+
+### firewall/
+Управление iptables/nftables.  
+- defaults/main.yaml — общие переменные  
+- tasks/main.yaml — правила firewall  
+
+DevSecOps-смысл: контроль сетевого трафика и минимизация attack surface.
+
+### selinux/
+Настройка SELinux.  
+- defaults/main.yaml — общие переменные  
+- tasks/main.yaml — enforce policy  
+
+DevSecOps-смысл: mandatory access control для OS и приложений.
+
+### container-runtime-hardening/
+Hardening контейнерного рантайма.  
+- defaults/main.yaml — общие переменные  
+- tasks/main.yaml — конфигурация daemon.json  
+- templates/daemon.json.j2 — шаблон конфигурации  
+- handlers/main.yaml — перезапуск runtime  
+
+DevSecOps-смысл: безопасный runtime для AI workloads.
+
+### kubernetes-node-hardening/
+Hardening Kubernetes-ноды.  
+- defaults/main.yaml — общие переменные  
+- tasks/kubelet.yaml — kubelet configuration  
+- tasks/cni.yaml — CNI security  
+- tasks/main.yaml — orchestrates kubelet и CNI, обеспечивает идемпотентное применение всех node-level security controls  
+- templates/kubelet-config.yaml.j2 — шаблон kubelet  
+- handlers/main.yaml — reload services  
+
+DevSecOps-смысл: node-level security, контроль data/control plane.
+
+### gpu-hardening/
+Hardening GPU-узлов.  
+- defaults/main.yaml — общие переменные  
+- tasks/main.yaml — runtime ограничения  
+- handlers/main.yaml — при необходимости  
+- files/.gitkeep — placeholder  
+
+DevSecOps-смысл: безопасность AI workloads, isolation, multi-tenant protection.
+
+### compliance/
+Автоматизация соответствия стандартам.  
+- tasks/cis.yaml — CIS controls  
+- tasks/nist.yaml — NIST controls  
+- tasks/main.yaml — orchestrates CIS и NIST tasks, централизованное compliance enforcement
+- reports/.gitkeep — генерация отчётов  
+- defaults/main.yaml — переменные  
+
+DevSecOps-смысл: compliance как first-class citizen, audit-ready.
+
+### break-glass/
+Реализация экстренного доступа.  
+- tasks/main.yaml — выдача временных прав  
+- templates/sudoers.j2 — шаблон sudoers  
+- defaults/main.yaml — настройки временных окон  
+
+DevSecOps-смысл: controlled exception, full audit, enforce policy.
