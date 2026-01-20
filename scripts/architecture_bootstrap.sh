@@ -20,7 +20,7 @@ roles/logging/{defaults,tasks,handlers,templates}
 roles/firewall/{defaults,tasks}
 roles/selinux/{defaults,tasks}
 roles/container-runtime-hardening/{defaults,tasks,handlers,templates}
-roles/kubernetes-node-hardening/{defaults,tasks,templates}
+roles/kubernetes-node-hardening/{defaults,tasks,handlers,templates}
 roles/gpu-hardening/{defaults,tasks,files}
 roles/compliance/{defaults,tasks,reports}
 roles/break-glass/{defaults,tasks,templates}
@@ -64,7 +64,7 @@ roles/selinux/{defaults/main.yaml,tasks/main.yaml}
 roles/container-runtime-hardening/{defaults/main.yaml,handlers/main.yaml,tasks/main.yaml}
 roles/container-runtime-hardening/templates/daemon.json.j2
 
-roles/kubernetes-node-hardening/defaults/main.yaml
+roles/kubernetes-node-hardening/{defaults/main.yaml,handlers/main.yaml}
 roles/kubernetes-node-hardening/tasks/{main.yaml,kubelet.yaml,cni.yaml}
 roles/kubernetes-node-hardening/templates/kubelet-config.yaml.j2
 

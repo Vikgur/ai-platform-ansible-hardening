@@ -1,0 +1,5 @@
+kubelet_enable: true
+kubelet_config_path: /etc/kubernetes/kubelet-config.yaml
+
+cni_enable: true
+cni_config_path: /etc/cni/net.d

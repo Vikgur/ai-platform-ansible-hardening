@@ -1,0 +1,15 @@
+- name: Ensure CNI directory exists
+  ansible.builtin.file:
+    path: "{{ cni_config_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Deploy CNI config to prevent host access
+  ansible.builtin.copy:
+    src: no-host-access.conflist
+    dest: "{{ cni_config_path }}/10-no-host-access.conflist"
+    owner: root
+    group: root
+    mode: "0644"

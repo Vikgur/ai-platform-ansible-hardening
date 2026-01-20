@@ -1,0 +1,5 @@
+- import_tasks: kubelet.yaml
+  when: kubelet_enable
+
+- import_tasks: cni.yaml
+  when: cni_enable

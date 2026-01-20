@@ -1,0 +1,14 @@
+- name: Deploy kubelet configuration
+  ansible.builtin.template:
+    src: kubelet-config.yaml.j2
+    dest: "{{ kubelet_config_path }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart kubelet
+
+- name: Ensure kubelet service
+  ansible.builtin.service:
+    name: kubelet
+    enabled: true
+    state: started
