@@ -1,0 +1,25 @@
+- name: Restrict access to GPU devices
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: root
+    group: root
+    mode: "0600"
+  loop: "{{ lookup('ansible.builtin.glob', gpu_devices_path, wantlist=True) }}"
+  when: gpu_enable
+
+- name: Ensure no shared GPU access without explicit allow
+  ansible.builtin.lineinfile:
+    path: /etc/security/limits.conf
+    line: "* hard memlock 0"
+    state: present
+  when: gpu_enable and not gpu_shared_access
+
+- name: Audit GPU access attempts
+  ansible.builtin.copy:
+    dest: /etc/audit/rules.d/gpu.rules
+    content: "-w /dev/nvidia* -p rwxa -k gpu_access"
+    owner: root
+    group: root
+    mode: "0600"
+  notify: Restart auditd
+  when: gpu_enable and gpu_audit_enabled

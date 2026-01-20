@@ -1,0 +1,4 @@
+gpu_enable: true
+gpu_devices_path: /dev/nvidia*
+gpu_shared_access: false
+gpu_audit_enabled: true
