@@ -1,3 +1,70 @@
+# Оглавление
+
+- [Структура репозитория Ansible Hardening](#структура-репозитория-ansible-hardening)
+- [Архитектурная логика структуры](#архитектурная-логика-структуры)
+- [Корень репозитория](#корень-репозитория)
+  - [inventories/](#inventories)
+  - [playbooks/](#playbooks)
+  - [roles/](#roles)
+  - [collections/](#collections)
+  - [policies/](#policies)
+  - [ci/](#ci)
+  - [scripts/](#scripts)
+  - [docs/](#docs)
+- [Назначение директорий и файлов](#назначение-директорий-и-файлов)
+  - [README.md](#readmemd)
+  - [ansible.cfg](#ansiblecfg)
+  - [requirements.yml](#requirementsyml)
+  - [.ansible-lint](#ansible-lint)
+  - [.yamllint](#yamllint)
+  - [.gitignore](#gitignore)
+  - [inventories/](#inventories-1)
+  - [playbooks/](#playbooks-1)
+    - [site.yaml](#siteyaml)
+    - [bootstrap.yaml](#bootstrapyaml)
+    - [hardening.yaml](#hardeningyaml)
+    - [kubernetes.yaml](#kubernetesyaml)
+    - [ai-nodes.yaml](#ai-nodesyaml)
+    - [break-glass.yaml](#break-glassyaml)
+  - [collections/](#collections-1)
+    - [ansible_collections/.gitkeep](#ansible_collectionsgitkeep)
+  - [policies/](#policies-1)
+    - [ansible/](#ansible)
+    - [README.md](#readmemd-1)
+  - [ci/](#ci-1)
+    - [ansible-lint.yml](#ansible-lintyml)
+    - [ansible-check.yml](#ansible-checkyml)
+    - [compliance-report.yml](#compliance-reportyml)
+  - [scripts/](#scripts-1)
+    - [bootstrap.sh](#bootstrapsh)
+    - [run-playbook.sh](#run-playbooksh)
+    - [verify.sh](#verifysh)
+    - [architecture_bootstrap.sh](#architecture_bootstrapsh)
+  - [docs/](#docs-1)
+    - [architecture.md](#architecturemd)
+    - [threat-model.md](#threat-modelmd)
+    - [hardening-baseline.md](#hardening-baselinemd)
+    - [kubernetes-security.md](#kubernetes-securitymd)
+    - [ai-node-security.md](#ai-node-securitymd)
+    - [break-glass.md](#break-glassmd)
+    - [compliance-mapping.md](#compliance-mappingmd)
+    - [repository-structure.md](#repository-structuremd)
+  - [roles/](#roles-1)
+    - [common/](#common)
+    - [os-hardening/](#os-hardening)
+    - [ssh-hardening/](#ssh-hardening)
+    - [auditd/](#auditd)
+    - [logging/](#logging)
+    - [firewall/](#firewall)
+    - [selinux/](#selinux)
+    - [container-runtime-hardening/](#container-runtime-hardening)
+    - [kubernetes-node-hardening/](#kubernetes-node-hardening)
+    - [gpu-hardening/](#gpu-hardening)
+    - [compliance/](#compliance)
+    - [break-glass/](#break-glass)
+
+---
+
 # Структура репозитория Ansible Hardening
 
 Данный документ описывает **структуру репозитория как архитектурное решение**, а не как перечень файлов.
@@ -8,6 +75,8 @@
 – как репозиторий поддерживает DevSecOps-модель Sovereign AI  
 
 Документ опирается на `docs/architecture.md` и используется как навигационная карта для `docs/README.md`.
+
+---
 
 # Архитектурная логика структуры
 
@@ -21,6 +90,8 @@
 
 Структура отражает путь:
 **политика → контроль → применение → проверка → доказательство**.
+
+---
 
 # Корень репозитория
 
@@ -36,7 +107,7 @@ DevSecOps-смысл:
 – минимизация случайных изменений  
 – стандартизация запуска и проверок  
 
-# inventories/
+## inventories/
 
 Слой описания **окружений и ролей узлов**.
 
@@ -50,7 +121,7 @@ DevSecOps-смысл:
 – различия изолированы и явны  
 – минимизация environment-specific drift  
 
-# playbooks/
+## playbooks/
 
 Слой **исполняемых сценариев**.
 
@@ -64,7 +135,7 @@ DevSecOps-смысл:
 – воспроизводимость действий  
 – контроль blast-radius  
 
-# roles/
+## roles/
 
 Основной слой **security-enforcement**.
 
@@ -83,7 +154,7 @@ DevSecOps-смысл:
 – переиспользуемые контроли  
 – проверяемость и аудит  
 
-# collections/
+## collections/
 
 Слой расширения Ansible.
 
@@ -96,7 +167,7 @@ DevSecOps-смысл:
 – защита от неявных зависимостей  
 – детерминированные сборки  
 
-# policies/
+## policies/
 
 Слой **policy-as-code**.
 
@@ -110,7 +181,7 @@ DevSecOps-смысл:
 – предотвращение ошибок, а не реакция  
 – enforcement без человека  
 
-# ci/
+## ci/
 
 Слой **доказательства безопасности**.
 
@@ -124,7 +195,7 @@ DevSecOps-смысл:
 – отказ от доверия ручным действиям  
 – соответствие как результат, а не декларация  
 
-# scripts/
+## scripts/
 
 Слой вспомогательных утилит.
 
@@ -137,7 +208,7 @@ DevSecOps-смысл:
 – снижение человеческого фактора  
 – одинаковое поведение локально и в CI  
 
-# docs/
+## docs/
 
 Слой **архитектурного знания**.
 

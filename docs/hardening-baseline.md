@@ -1,3 +1,21 @@
+# Оглавление
+
+- [Hardening Baseline для Sovereign AI](#hardening-baseline-для-sovereign-ai)
+- [Формальное определение Hardened Host](#формальное-определение-hardened-host)
+- [Базовые OS-контроли](#базовые-os-контроли)
+  - [Kernel](#kernel)
+  - [Sysctl](#sysctl)
+  - [Filesystem](#filesystem)
+  - [Users и доступ](#users-и-доступ)
+  - [Network](#network)
+- [Container Runtime Baseline](#container-runtime-baseline)
+- [Immutable и Mutable зоны](#immutable-и-mutable-зоны)
+- [Drift и контроль изменений](#drift-и-контроль-изменений)
+- [Реализация и соответствие](#реализация-и-соответствие)
+- [Использование baseline](#использование-baseline)
+
+---
+
 # Hardening Baseline для Sovereign AI
 
 Данный документ формально определяет, что в рамках платформы Sovereign AI считается **hardened host**.
@@ -8,6 +26,8 @@
 – как эталон для Ansible-ролей  
 – как источник для `docs/compliance-mapping.md`  
 – как фундамент для `docs/architecture.md`  
+
+---
 
 # Формальное определение Hardened Host
 
@@ -22,6 +42,8 @@
 – конфигурационный дрейф обнаружим  
 
 Частичное соответствие не допускается.
+
+---
 
 # Базовые OS-контроли
 
@@ -60,6 +82,8 @@
 – контроль исходящих соединений  
 – явное разделение плоскостей трафика  
 
+---
+
 # Container Runtime Baseline
 
 Для всех узлов с контейнерной нагрузкой:
@@ -70,6 +94,8 @@
 – контроль образов и runtime конфигурации  
 
 Runtime считается частью attack surface хоста.
+
+---
 
 # Immutable и Mutable зоны
 
@@ -87,6 +113,8 @@ Mutable:
 
 Любое изменение immutable-зоны считается инцидентом.
 
+---
+
 # Drift и контроль изменений
 
 Требования к drift:
@@ -97,6 +125,8 @@ Mutable:
 – ручное исправление запрещено  
 
 Drift-management не заменяет hardening, а дополняет его.
+
+---
 
 # Реализация и соответствие
 
@@ -112,6 +142,8 @@ Drift-management не заменяет hardening, а дополняет его.
 – исполняем  
 – проверяем  
 – трассируем  
+
+---
 
 # Использование baseline
 
